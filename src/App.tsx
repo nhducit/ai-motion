@@ -1,287 +1,271 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { useState } from 'react';
+import { DemoCard } from './components/DemoCard';
 import {
-  GestureRecognizer,
-  FilesetResolver,
-  GestureRecognizerResult,
-} from '@mediapipe/tasks-vision';
-import { useWebcam } from './hooks/useWebcam';
-import { useGesture } from './hooks/useGesture';
-import { GestureType } from './types';
-import {
-  OpenHandAnimation,
-  FistAnimation,
-  PointAnimation,
-  PeaceAnimation,
-  ThumbsUpAnimation,
-} from './animations';
+  GestureRecognitionDemo,
+  ObjectDetectionDemo,
+  ImageClassificationDemo,
+  ImageSegmentationDemo,
+  FaceDetectionDemo,
+  FaceLandmarkDemo,
+  PoseLandmarkDemo,
+  HandLandmarkDemo,
+  TextClassificationDemo,
+  AudioClassificationDemo,
+  InteractiveSegmentationDemo,
+  ImageEmbeddingDemo,
+  TextEmbeddingDemo,
+  LanguageDetectionDemo,
+} from './demos';
 import './App.css';
 
-function GestureAnimation({ gesture }: { gesture: GestureType }) {
-  switch (gesture) {
-    case 'open_hand':
-      return <OpenHandAnimation intensity={1} />;
-    case 'fist':
-      return <FistAnimation intensity={1} />;
-    case 'point':
-      return <PointAnimation intensity={1} />;
-    case 'peace':
-      return <PeaceAnimation intensity={1} />;
-    case 'thumbs_up':
-      return <ThumbsUpAnimation intensity={1} />;
-    default:
-      return null;
-  }
+type DemoType =
+  | 'home'
+  | 'gesture'
+  | 'object-detection'
+  | 'image-classification'
+  | 'image-segmentation'
+  | 'face-detection'
+  | 'face-landmark'
+  | 'pose-landmark'
+  | 'hand-landmark'
+  | 'text-classification'
+  | 'audio-classification'
+  | 'interactive-segmentation'
+  | 'image-embedding'
+  | 'text-embedding'
+  | 'language-detection';
+
+interface DemoInfo {
+  id: DemoType;
+  title: string;
+  description: string;
+  icon: string;
+  category: 'vision' | 'text' | 'audio';
 }
 
+const DEMOS: DemoInfo[] = [
+  {
+    id: 'gesture',
+    title: 'Gesture Recognition',
+    description: 'Recognize hand gestures with 3D animations',
+    icon: '🤚',
+    category: 'vision',
+  },
+  {
+    id: 'hand-landmark',
+    title: 'Hand Landmark',
+    description: 'Track 21 hand landmarks with finger detection',
+    icon: '✋',
+    category: 'vision',
+  },
+  {
+    id: 'object-detection',
+    title: 'Object Detection',
+    description: 'Detect and locate objects in real-time',
+    icon: '📦',
+    category: 'vision',
+  },
+  {
+    id: 'image-classification',
+    title: 'Image Classification',
+    description: 'Classify images into 1000+ categories',
+    icon: '🏷️',
+    category: 'vision',
+  },
+  {
+    id: 'image-segmentation',
+    title: 'Image Segmentation',
+    description: 'Pixel-level semantic segmentation',
+    icon: '🎨',
+    category: 'vision',
+  },
+  {
+    id: 'interactive-segmentation',
+    title: 'Interactive Segmentation',
+    description: 'Click to segment objects in images',
+    icon: '🖱️',
+    category: 'vision',
+  },
+  {
+    id: 'face-detection',
+    title: 'Face Detection',
+    description: 'Detect faces and facial keypoints',
+    icon: '😀',
+    category: 'vision',
+  },
+  {
+    id: 'face-landmark',
+    title: 'Face Landmark',
+    description: '478 facial landmarks with mesh and iris',
+    icon: '👤',
+    category: 'vision',
+  },
+  {
+    id: 'pose-landmark',
+    title: 'Pose Landmark',
+    description: 'Full body pose with 33 keypoints',
+    icon: '🏃',
+    category: 'vision',
+  },
+  {
+    id: 'image-embedding',
+    title: 'Image Embedding',
+    description: 'Compare image similarity with embeddings',
+    icon: '🔍',
+    category: 'vision',
+  },
+  {
+    id: 'text-classification',
+    title: 'Text Classification',
+    description: 'Sentiment analysis with BERT',
+    icon: '📝',
+    category: 'text',
+  },
+  {
+    id: 'text-embedding',
+    title: 'Text Embedding',
+    description: 'Semantic text similarity comparison',
+    icon: '📊',
+    category: 'text',
+  },
+  {
+    id: 'language-detection',
+    title: 'Language Detection',
+    description: 'Detect language from text input',
+    icon: '🌐',
+    category: 'text',
+  },
+  {
+    id: 'audio-classification',
+    title: 'Audio Classification',
+    description: 'Classify sounds with YAMNet',
+    icon: '🎵',
+    category: 'audio',
+  },
+];
+
 function App() {
-  const { videoRef, startWebcam, stopWebcam, isActive, error } = useWebcam();
-  const { currentGesture, confidence, updateGesture } = useGesture();
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gestureRecognizerRef = useRef<GestureRecognizer | null>(null);
-  const animationFrameRef = useRef<number>();
-  const lastVideoTimeRef = useRef<number>(-1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [handsReady, setHandsReady] = useState(false);
+  const [currentDemo, setCurrentDemo] = useState<DemoType>('home');
 
-  const drawLandmarks = useCallback((results: GestureRecognizerResult) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    if (results.landmarks && results.landmarks.length > 0) {
-      for (const landmarks of results.landmarks) {
-        // Draw connections
-        const connections = [
-          [0, 1], [1, 2], [2, 3], [3, 4],
-          [0, 5], [5, 6], [6, 7], [7, 8],
-          [0, 9], [9, 10], [10, 11], [11, 12],
-          [0, 13], [13, 14], [14, 15], [15, 16],
-          [0, 17], [17, 18], [18, 19], [19, 20],
-          [5, 9], [9, 13], [13, 17],
-        ];
-
-        ctx.strokeStyle = '#00FF00';
-        ctx.lineWidth = 2;
-
-        for (const [start, end] of connections) {
-          const startPoint = landmarks[start];
-          const endPoint = landmarks[end];
-          ctx.beginPath();
-          ctx.moveTo(startPoint.x * canvas.width, startPoint.y * canvas.height);
-          ctx.lineTo(endPoint.x * canvas.width, endPoint.y * canvas.height);
-          ctx.stroke();
-        }
-
-        // Draw landmarks
-        ctx.fillStyle = '#FF0000';
-        for (const landmark of landmarks) {
-          ctx.beginPath();
-          ctx.arc(
-            landmark.x * canvas.width,
-            landmark.y * canvas.height,
-            5,
-            0,
-            2 * Math.PI
-          );
-          ctx.fill();
-        }
-      }
+  const renderDemo = () => {
+    switch (currentDemo) {
+      case 'gesture':
+        return <GestureRecognitionDemo onBack={() => setCurrentDemo('home')} />;
+      case 'object-detection':
+        return <ObjectDetectionDemo onBack={() => setCurrentDemo('home')} />;
+      case 'image-classification':
+        return <ImageClassificationDemo onBack={() => setCurrentDemo('home')} />;
+      case 'image-segmentation':
+        return <ImageSegmentationDemo onBack={() => setCurrentDemo('home')} />;
+      case 'face-detection':
+        return <FaceDetectionDemo onBack={() => setCurrentDemo('home')} />;
+      case 'face-landmark':
+        return <FaceLandmarkDemo onBack={() => setCurrentDemo('home')} />;
+      case 'pose-landmark':
+        return <PoseLandmarkDemo onBack={() => setCurrentDemo('home')} />;
+      case 'hand-landmark':
+        return <HandLandmarkDemo onBack={() => setCurrentDemo('home')} />;
+      case 'text-classification':
+        return <TextClassificationDemo onBack={() => setCurrentDemo('home')} />;
+      case 'audio-classification':
+        return <AudioClassificationDemo onBack={() => setCurrentDemo('home')} />;
+      case 'interactive-segmentation':
+        return <InteractiveSegmentationDemo onBack={() => setCurrentDemo('home')} />;
+      case 'image-embedding':
+        return <ImageEmbeddingDemo onBack={() => setCurrentDemo('home')} />;
+      case 'text-embedding':
+        return <TextEmbeddingDemo onBack={() => setCurrentDemo('home')} />;
+      case 'language-detection':
+        return <LanguageDetectionDemo onBack={() => setCurrentDemo('home')} />;
+      default:
+        return null;
     }
-  }, []);
-
-  useEffect(() => {
-    const initGestureRecognizer = async () => {
-      try {
-        const vision = await FilesetResolver.forVisionTasks(
-          'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-        );
-
-        const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-          baseOptions: {
-            modelAssetPath:
-              'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
-            delegate: 'GPU',
-          },
-          runningMode: 'VIDEO',
-          numHands: 1,
-        });
-
-        gestureRecognizerRef.current = gestureRecognizer;
-        setHandsReady(true);
-      } catch (err) {
-        console.error('Failed to initialize gesture recognizer:', err);
-        // Try with CPU delegate as fallback
-        try {
-          const vision = await FilesetResolver.forVisionTasks(
-            'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-          );
-
-          const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-            baseOptions: {
-              modelAssetPath:
-                'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
-              delegate: 'CPU',
-            },
-            runningMode: 'VIDEO',
-            numHands: 1,
-          });
-
-          gestureRecognizerRef.current = gestureRecognizer;
-          setHandsReady(true);
-        } catch (fallbackErr) {
-          console.error('Failed to initialize gesture recognizer with CPU fallback:', fallbackErr);
-        }
-      }
-    };
-
-    initGestureRecognizer();
-
-    return () => {
-      if (gestureRecognizerRef.current) {
-        gestureRecognizerRef.current.close();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!isActive || !handsReady || !gestureRecognizerRef.current) return;
-
-    const detectFrame = () => {
-      if (!gestureRecognizerRef.current || !videoRef.current) return;
-
-      const video = videoRef.current;
-      if (video.readyState >= 2 && video.currentTime !== lastVideoTimeRef.current) {
-        lastVideoTimeRef.current = video.currentTime;
-
-        try {
-          const results = gestureRecognizerRef.current.recognizeForVideo(
-            video,
-            performance.now()
-          );
-
-          drawLandmarks(results);
-
-          if (results.gestures && results.gestures.length > 0 && results.gestures[0].length > 0) {
-            // Use MediaPipe's gesture classification
-            if (results.landmarks && results.landmarks.length > 0) {
-              updateGesture(results.landmarks[0], 'Right');
-            }
-          } else {
-            updateGesture(null, 'Right');
-          }
-        } catch (err) {
-          console.error('Error during gesture recognition:', err);
-        }
-      }
-
-      animationFrameRef.current = requestAnimationFrame(detectFrame);
-    };
-
-    detectFrame();
-
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-    };
-  }, [isActive, handsReady, videoRef, drawLandmarks, updateGesture]);
-
-  const handleStart = async () => {
-    setIsLoading(true);
-    await startWebcam();
-    setIsLoading(false);
   };
 
-  const gestureLabels: Record<GestureType, string> = {
-    none: 'No gesture detected',
-    open_hand: '✋ Open Hand - Particle Explosion',
-    fist: '✊ Fist - Pulsing Sphere',
-    point: '👆 Point - Laser Beam',
-    peace: '✌️ Peace - Rainbow Wave',
-    thumbs_up: '👍 Thumbs Up - Fireworks',
-  };
+  if (currentDemo !== 'home') {
+    return renderDemo();
+  }
+
+  const visionDemos = DEMOS.filter(d => d.category === 'vision');
+  const textDemos = DEMOS.filter(d => d.category === 'text');
+  const audioDemos = DEMOS.filter(d => d.category === 'audio');
 
   return (
     <div className="app">
       <header className="header">
-        <h1>AI Motion</h1>
-        <p>Hand Gesture Controlled 3D Animations</p>
+        <h1>MediaPipe Solutions</h1>
+        <p>Interactive demos for all MediaPipe AI solutions on the web</p>
       </header>
 
-      <main className="main">
-        <div className="video-section">
-          <div className="video-container">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="video"
-            />
-            <canvas
-              ref={canvasRef}
-              className="overlay"
-              width={640}
-              height={480}
-            />
-            {!isActive && (
-              <div className="video-placeholder">
-                <p>Camera not active</p>
-              </div>
-            )}
+      <main className="demos-main">
+        <section className="demo-section">
+          <h2 className="section-title">
+            <span className="section-icon">👁️</span>
+            Vision
+          </h2>
+          <div className="demo-grid">
+            {visionDemos.map(demo => (
+              <DemoCard
+                key={demo.id}
+                title={demo.title}
+                description={demo.description}
+                icon={<span>{demo.icon}</span>}
+                category={demo.category}
+                onClick={() => setCurrentDemo(demo.id)}
+              />
+            ))}
           </div>
+        </section>
 
-          <div className="controls">
-            {!isActive ? (
-              <button
-                onClick={handleStart}
-                disabled={isLoading || !handsReady}
-                className="btn btn-primary"
-              >
-                {isLoading ? 'Starting...' : handsReady ? 'Start Camera' : 'Loading AI...'}
-              </button>
-            ) : (
-              <button onClick={stopWebcam} className="btn btn-secondary">
-                Stop Camera
-              </button>
-            )}
+        <section className="demo-section">
+          <h2 className="section-title">
+            <span className="section-icon">📝</span>
+            Text
+          </h2>
+          <div className="demo-grid">
+            {textDemos.map(demo => (
+              <DemoCard
+                key={demo.id}
+                title={demo.title}
+                description={demo.description}
+                icon={<span>{demo.icon}</span>}
+                category={demo.category}
+                onClick={() => setCurrentDemo(demo.id)}
+              />
+            ))}
           </div>
+        </section>
 
-          {error && <div className="error">{error}</div>}
-
-          <div className="gesture-info">
-            <div className="gesture-label">{gestureLabels[currentGesture]}</div>
-            {confidence > 0 && (
-              <div className="confidence">
-                Confidence: {Math.round(confidence * 100)}%
-              </div>
-            )}
+        <section className="demo-section">
+          <h2 className="section-title">
+            <span className="section-icon">🎵</span>
+            Audio
+          </h2>
+          <div className="demo-grid">
+            {audioDemos.map(demo => (
+              <DemoCard
+                key={demo.id}
+                title={demo.title}
+                description={demo.description}
+                icon={<span>{demo.icon}</span>}
+                category={demo.category}
+                onClick={() => setCurrentDemo(demo.id)}
+              />
+            ))}
           </div>
-        </div>
-
-        <div className="animation-section">
-          <Canvas camera={{ position: [0, 0, 5], fov: 75 }}>
-            <ambientLight intensity={0.5} />
-            <pointLight position={[10, 10, 10]} />
-            <GestureAnimation gesture={currentGesture} />
-            <OrbitControls enableZoom={false} />
-          </Canvas>
-        </div>
+        </section>
       </main>
 
       <footer className="footer">
-        <p>Show your hand to the camera and make gestures!</p>
-        <div className="gesture-guide">
-          <span>✋ Open</span>
-          <span>✊ Fist</span>
-          <span>👆 Point</span>
-          <span>✌️ Peace</span>
-          <span>👍 Thumbs Up</span>
-        </div>
+        <p>
+          Powered by{' '}
+          <a href="https://ai.google.dev/edge/mediapipe/solutions/guide" target="_blank" rel="noopener noreferrer">
+            MediaPipe
+          </a>
+        </p>
+        <p className="footer-note">
+          14 AI solutions • Vision • Text • Audio
+        </p>
       </footer>
     </div>
   );

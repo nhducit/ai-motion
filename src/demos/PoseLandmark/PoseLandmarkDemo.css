@@ -1,0 +1,144 @@
+.pose-landmark-demo {
+  width: 100%;
+}
+
+.video-container {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #666;
+}
+
+.visualization-options {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.visualization-options h4 {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.75rem;
+}
+
+.toggle-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.toggle-option input {
+  width: 16px;
+  height: 16px;
+  accent-color: #00d4ff;
+}
+
+.pose-stats {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.pose-stat {
+  flex: 1;
+  text-align: center;
+  padding: 0.75rem;
+  background: rgba(0, 212, 255, 0.1);
+  border-radius: 8px;
+}
+
+.pose-stat__value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #00d4ff;
+}
+
+.pose-stat__label {
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.landmark-list {
+  margin-bottom: 1rem;
+}
+
+.landmark-list h4 {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 0.5rem;
+}
+
+.landmark-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.landmark-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  font-size: 0.75rem;
+}
+
+.landmark-item__index {
+  width: 20px;
+  color: #00d4ff;
+  font-weight: 600;
+}
+
+.landmark-item__name {
+  color: #888;
+}
+
+.model-info {
+  font-size: 0.8rem;
+  color: #666;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.model-info p {
+  margin-bottom: 0.25rem;
+}
+
+.btn-full {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}

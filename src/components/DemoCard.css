@@ -1,0 +1,86 @@
+.demo-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.demo-card--vision {
+  border-left: 3px solid #00d4ff;
+}
+
+.demo-card--vision:hover {
+  box-shadow: 0 4px 20px rgba(0, 212, 255, 0.2);
+}
+
+.demo-card--text {
+  border-left: 3px solid #7b2cbf;
+}
+
+.demo-card--text:hover {
+  box-shadow: 0 4px 20px rgba(123, 44, 191, 0.2);
+}
+
+.demo-card--audio {
+  border-left: 3px solid #ff6b6b;
+}
+
+.demo-card--audio:hover {
+  box-shadow: 0 4px 20px rgba(255, 107, 107, 0.2);
+}
+
+.demo-card__icon {
+  font-size: 2rem;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.demo-card__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.demo-card__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: white;
+}
+
+.demo-card__description {
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.4;
+}
+
+.demo-card__category {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #888;
+}

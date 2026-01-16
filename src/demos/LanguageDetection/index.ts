@@ -1,0 +1,1 @@
+export { LanguageDetectionDemo } from './LanguageDetectionDemo';

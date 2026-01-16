@@ -1,0 +1,1 @@
+export { TextClassificationDemo } from './TextClassificationDemo';

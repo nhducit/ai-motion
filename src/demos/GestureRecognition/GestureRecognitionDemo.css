@@ -1,0 +1,108 @@
+.gesture-demo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  height: 100%;
+}
+
+@media (max-width: 900px) {
+  .gesture-demo {
+    grid-template-columns: 1fr;
+  }
+}
+
+.gesture-demo__video {
+  position: relative;
+}
+
+.gesture-demo__animation {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  min-height: 350px;
+}
+
+.video-container {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #666;
+}
+
+.gesture-result {
+  margin-bottom: 1rem;
+}
+
+.gesture-result__label {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #00d4ff;
+  margin-bottom: 0.25rem;
+}
+
+.gesture-result__confidence {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.gesture-guide {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.gesture-guide p {
+  margin-bottom: 0.5rem;
+}
+
+.gesture-guide ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.gesture-guide li {
+  padding: 0.25rem 0;
+  padding-left: 1rem;
+  position: relative;
+}
+
+.gesture-guide li::before {
+  content: '>';
+  position: absolute;
+  left: 0;
+  color: #00d4ff;
+}
+
+.btn-full {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}

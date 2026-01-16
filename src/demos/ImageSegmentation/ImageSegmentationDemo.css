@@ -1,0 +1,88 @@
+.image-segmentation-demo {
+  width: 100%;
+}
+
+.video-container {
+  position: relative;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  transform: scaleX(-1);
+}
+
+.video-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #666;
+}
+
+.legend {
+  max-height: 280px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0;
+  opacity: 0.4;
+  transition: opacity 0.2s ease;
+}
+
+.legend-item--active {
+  opacity: 1;
+}
+
+.legend-item__color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.legend-item__name {
+  font-size: 0.8rem;
+  color: #ccc;
+}
+
+.model-info {
+  font-size: 0.8rem;
+  color: #666;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.model-info p {
+  margin-bottom: 0.25rem;
+}
+
+.btn-full {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}

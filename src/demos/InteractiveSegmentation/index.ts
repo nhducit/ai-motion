@@ -1,0 +1,1 @@
+export { InteractiveSegmentationDemo } from './InteractiveSegmentationDemo';

@@ -1,0 +1,1 @@
+export { ImageEmbeddingDemo } from './ImageEmbeddingDemo';

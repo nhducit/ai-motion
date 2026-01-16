@@ -1,0 +1,1 @@
+export { HandLandmarkDemo } from './HandLandmarkDemo';

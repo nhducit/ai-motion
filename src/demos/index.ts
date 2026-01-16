@@ -1,0 +1,14 @@
+export { GestureRecognitionDemo } from './GestureRecognition';
+export { ObjectDetectionDemo } from './ObjectDetection';
+export { ImageClassificationDemo } from './ImageClassification';
+export { ImageSegmentationDemo } from './ImageSegmentation';
+export { FaceDetectionDemo } from './FaceDetection';
+export { FaceLandmarkDemo } from './FaceLandmark';
+export { PoseLandmarkDemo } from './PoseLandmark';
+export { HandLandmarkDemo } from './HandLandmark';
+export { TextClassificationDemo } from './TextClassification';
+export { AudioClassificationDemo } from './AudioClassification';
+export { InteractiveSegmentationDemo } from './InteractiveSegmentation';
+export { ImageEmbeddingDemo } from './ImageEmbedding';
+export { TextEmbeddingDemo } from './TextEmbedding';
+export { LanguageDetectionDemo } from './LanguageDetection';

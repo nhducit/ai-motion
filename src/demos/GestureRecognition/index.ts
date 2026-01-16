@@ -1,0 +1,1 @@
+export { GestureRecognitionDemo } from './GestureRecognitionDemo';

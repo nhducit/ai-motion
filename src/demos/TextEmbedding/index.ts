@@ -1,0 +1,1 @@
+export { TextEmbeddingDemo } from './TextEmbeddingDemo';

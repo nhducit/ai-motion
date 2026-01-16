@@ -1,0 +1,1 @@
+export { FaceLandmarkDemo } from './FaceLandmarkDemo';

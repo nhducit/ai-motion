@@ -1,0 +1,1 @@
+export { ImageClassificationDemo } from './ImageClassificationDemo';

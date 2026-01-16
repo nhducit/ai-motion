@@ -1,0 +1,1 @@
+export { ObjectDetectionDemo } from './ObjectDetectionDemo';
